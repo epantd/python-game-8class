@@ -86,6 +86,46 @@ async function loadProgressFromGoogleSheets() {
     return null;
 }
 
+async function saveProgressToGoogleSheets(action = 'update') {
+    console.log('=== ПОПЫТКА СОХРАНЕНИЯ ===');
+    
+    try {
+        const studentData = JSON.parse(localStorage.getItem('studentData'));
+        if (!studentData) {
+            console.log('❌ Нет данных ученика в localStorage');
+            return;
+        }
+
+        const progressData = {
+            action: action,
+            firstName: studentData.firstName,
+            lastName: studentData.lastName,
+            timestamp: new Date().toISOString(),
+            currentPart: currentPart,
+            currentLevel: currentLevel,
+            loginTime: studentData.loginTime
+        };
+
+        console.log('📤 Данные для отправки:', progressData);
+        console.log('🔗 URL:', SHEET_URL);
+
+        // Важно: используем mode: 'no-cors' для обхода CORS
+        const response = await fetch(SHEET_URL, {
+            method: 'POST',
+            mode: 'no-cors', // ← ДОБАВЬТЕ ЭТУ СТРОЧКУ
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(progressData)
+        });
+
+        console.log('✅ Запрос отправлен (no-cors mode)');
+        console.log('Прогресс должен появиться в таблице через несколько секунд');
+
+    } catch (error) {
+        console.error('💥 Ошибка при отправке:', error);
+    }
+}
 
 // --- Параметры Игры и Уровней ---
 let currentPart = 1; 
@@ -1125,3 +1165,4 @@ window.executeCode = async function() {
 lessonTitle.textContent = 'Уроки Python 8 класс';
 
 showIntroScreen();
+
