@@ -18,7 +18,7 @@ const taskSidebar = document.getElementById('task-sidebar');
 const currentTaskDisplay = document.getElementById('current-task-display');
 
 // --- Система сохранения прогресса ---
-const SHEET_URL = 'https://script.google.com/macros/s/1NnVVVj9A19jYsHxx_nBB9Bqp006yrI_m0BMd7fpJwHVKed8ByvPKq3nK/exec';
+const SHEET_URL = 'https://script.google.com/macros/s/AKfycbwIWOZEe2S1mubV60vXwNb8kKs3PS_4vO42ezM72s7fORFGWdlPJoY-_fS9bp0ihW8u-Q/exec';
 // Автоматическое сохранение при каждом изменении прогресса
 async function autoSaveProgress() {
     const studentData = JSON.parse(localStorage.getItem('studentData'));
@@ -1123,4 +1123,5 @@ window.executeCode = async function() {
 
 // --- Запуск игры при загрузке страницы ---
 lessonTitle.textContent = 'Уроки Python 8 класс';
+
 showIntroScreen();
