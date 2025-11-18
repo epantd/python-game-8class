@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вход - Уроки Python 8 класс</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .login-container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            padding: 40px;
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .logo {
+            margin-bottom: 30px;
+        }
+
+        .logo h1 {
+            color: #3498db;
+            font-size: 2em;
+            margin-bottom: 5px;
+        }
+
+        .logo p {
+            color: #7f8c8d;
+            font-size: 1.1em;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #ecf0f1;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+        }
+
+        .login-btn:active {
+            transform: translateY(0);
+        }
+
+        .error-message {
+            color: #e74c3c;
+            margin-top: 15px;
+            padding: 10px;
+            background-color: #fdf2f2;
+            border-radius: 5px;
+            display: none;
+        }
+
+        .teacher-link {
+            margin-top: 20px;
+            color: #7f8c8d;
+            font-size: 0.9em;
+        }
+
+        .teacher-link a {
+            color: #3498db;
+            text-decoration: none;
+        }
+
+        .teacher-link a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="logo">
+            <h1>Уроки Python</h1>
+            <p>8 класс</p>
+        </div>
+
+        <form id="loginForm">
+            <div class="input-group">
+                <label for="firstName">Имя:</label>
+                <input type="text" id="firstName" required placeholder="Введите ваше имя">
+            </div>
+
+            <div class="input-group">
+                <label for="lastName">Фамилия:</label>
+                <input type="text" id="lastName" required placeholder="Введите вашу фамилию">
+            </div>
+
+            <button type="submit" class="login-btn">Начать обучение</button>
+            
+            <div id="errorMessage" class="error-message"></div>
+        </form>
+
+        <div class="teacher-link">
+            <a href="index.html">Режим учителя →</a>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const firstName = document.getElementById('firstName').value.trim();
+            const lastName = document.getElementById('lastName').value.trim();
+            const errorMessage = document.getElementById('errorMessage');
+            
+            if (!firstName || !lastName) {
+                errorMessage.textContent = 'Пожалуйста, заполните все поля';
+                errorMessage.style.display = 'block';
+                return;
+            }
+            
+            // Сохраняем данные ученика в localStorage
+            const studentData = {
+                firstName: firstName,
+                lastName: lastName,
+                loginTime: new Date().toISOString(),
+                currentPart: 1,
+                currentLevel: 0
+            };
+            
+            localStorage.setItem('studentData', JSON.stringify(studentData));
+            
+            // Показываем сообщение о сохранении
+            errorMessage.textContent = 'Данные сохранены. Переход к игре...';
+            errorMessage.style.color = '#27ae60';
+            errorMessage.style.backgroundColor = '#f2f9f2';
+            errorMessage.style.display = 'block';
+            
+            // Переходим к игре через 1 секунду
+            setTimeout(() => {
+                window.location.href = 'index.html';
+            }, 1000);
+        });
+
+        // Очистка сообщения об ошибке при вводе
+        document.querySelectorAll('input').forEach(input => {
+            input.addEventListener('input', () => {
+                document.getElementById('errorMessage').style.display = 'none';
+            });
+        });
+    </script>
+</body>
+</html>
