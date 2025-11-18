@@ -59,86 +59,40 @@ async function autoSaveProgress() {
 }
 
 async function saveProgressToGoogleSheets(action = 'update') {
-    console.log('=== ПОПЫТКА СОХРАНЕНИЯ ===');
-    
-    try {
-        const studentData = JSON.parse(localStorage.getItem('studentData'));
-        if (!studentData) {
-            console.log('❌ Нет данных ученика в localStorage');
-            return;
-        }
+    const studentData = JSON.parse(localStorage.getItem('studentData'));
+    if (!studentData) return;
 
-        const progressData = {
-            action: action,
-            firstName: studentData.firstName,
-            lastName: studentData.lastName,
-            timestamp: new Date().toISOString(),
-            currentPart: currentPart,
-            currentLevel: currentLevel,
-            loginTime: studentData.loginTime
-        };
+    // Всегда сохраняем в localStorage
+    studentData.currentPart = currentPart;
+    studentData.currentLevel = currentLevel;
+    studentData.lastSave = new Date().toISOString();
+    localStorage.setItem('studentData', JSON.stringify(studentData));
 
-        console.log('📤 Данные для отправки:', progressData);
-        console.log('🔗 URL:', SHEET_URL);
+    // Отправляем в Google Sheets в фоне (no-cors)
+    const progressData = {
+        action: action,
+        firstName: studentData.firstName,
+        lastName: studentData.lastName,
+        timestamp: new Date().toISOString(),
+        currentPart: currentPart,
+        currentLevel: currentLevel,
+        loginTime: studentData.loginTime
+    };
 
-        // Важно: используем mode: 'no-cors' для обхода CORS
-        const response = await fetch(SHEET_URL, {
-            method: 'POST',
-            mode: 'no-cors', // ← ДОБАВЬТЕ ЭТУ СТРОЧКУ
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(progressData)
-        });
-
-        console.log('✅ Запрос отправлен (no-cors mode)');
-        console.log('Прогресс должен появиться в таблице через несколько секунд');
-
-    } catch (error) {
-        console.error('💥 Ошибка при отправке:', error);
-    }
+    // Отправляем без ожидания ответа
+    fetch(SHEET_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(progressData)
+    }).then(() => {
+        console.log('✅ Данные отправлены в таблицу');
+    }).catch(() => {
+        console.log('⚠️ Данные сохранены локально (ошибка сети)');
+    });
 }
 
-// Функция загрузки прогресса
-async function loadProgressFromGoogleSheets() {
-    console.log('=== ПОПЫТКА ЗАГРУЗКИ ПРОГРЕССА ===');
-    
-    try {
-        const studentData = JSON.parse(localStorage.getItem('studentData'));
-        if (!studentData) {
-            console.log('❌ Нет данных ученика для загрузки');
-            return null;
-        }
 
-        const requestData = {
-            action: 'get',
-            firstName: studentData.firstName,
-            lastName: studentData.lastName
-        };
-
-        console.log('📤 Запрос данных:', requestData);
-
-        const response = await fetch(SHEET_URL, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(requestData)
-        });
-
-        if (response.ok) {
-            const progress = await response.json();
-            console.log('✅ Данные загружены:', progress);
-            return progress;
-        } else {
-            console.log('❌ Ошибка загрузки, статус:', response.status);
-            return null;
-        }
-    } catch (error) {
-        console.error('💥 Ошибка загрузки прогресса:', error);
-        return null;
-    }
-}
 // --- Параметры Игры и Уровней ---
 let currentPart = 1; 
 let currentLevel = 0; 
@@ -298,11 +252,11 @@ window.hideIntroAndStart = async function() {
     gameContainer.style.opacity = '1'; 
     
     // Пытаемся загрузить сохраненный прогресс
-    const savedProgress = await loadProgressFromGoogleSheets();
-    if (savedProgress && savedProgress.success) {
-        currentPart = savedProgress.currentPart || 1;
-        currentLevel = savedProgress.currentLevel || 0;
-        console.log('Прогресс загружен:', { currentPart, currentLevel });
+    const studentData = JSON.parse(localStorage.getItem('studentData'));
+    if (studentData && studentData.currentPart && studentData.currentLevel) {
+        currentPart = studentData.currentPart;
+        currentLevel = studentData.currentLevel;
+        console.log('Прогресс загружен из localStorage:', { currentPart, currentLevel });
     }
 
     // Сброс видимости элементов
@@ -1177,6 +1131,7 @@ window.executeCode = async function() {
 lessonTitle.textContent = 'Уроки Python 8 класс';
 
 showIntroScreen();
+
 
 
 
