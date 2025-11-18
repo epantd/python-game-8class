@@ -58,34 +58,6 @@ async function autoSaveProgress() {
     }
 }
 
-// Вызывайте эту функцию при каждом изменении прогресса
-// Временное решение - отключите сохранение прогресса для локального тестирования
-async function saveProgressToGoogleSheets(action = 'update') {
-    console.log('Сохранение прогресса в Google Sheets (локальный режим)');
-    // Сохраняем прогресс только в localStorage
-    const studentData = JSON.parse(localStorage.getItem('studentData'));
-    if (studentData) {
-        studentData.currentPart = currentPart;
-        studentData.currentLevel = currentLevel;
-        localStorage.setItem('studentData', JSON.stringify(studentData));
-    }
-    return true;
-}
-
-async function loadProgressFromGoogleSheets() {
-    console.log('Загрузка прогресса из localStorage (локальный режим)');
-    // Загружаем прогресс из localStorage
-    const studentData = JSON.parse(localStorage.getItem('studentData'));
-    if (studentData && studentData.currentPart && studentData.currentLevel) {
-        return {
-            success: true,
-            currentPart: studentData.currentPart,
-            currentLevel: studentData.currentLevel
-        };
-    }
-    return null;
-}
-
 async function saveProgressToGoogleSheets(action = 'update') {
     console.log('=== ПОПЫТКА СОХРАНЕНИЯ ===');
     
@@ -1165,4 +1137,5 @@ window.executeCode = async function() {
 lessonTitle.textContent = 'Уроки Python 8 класс';
 
 showIntroScreen();
+
 
